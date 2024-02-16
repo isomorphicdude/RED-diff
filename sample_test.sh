@@ -1,6 +1,6 @@
 # Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved
 
-samples_root=/home/mmardani/research/stable-diffusion-sampling-gitlab/reddiff/_exp
+samples_root=reddiff/_exp
 save_deg=True
 save_ori=True
 overwrite=True
