@@ -97,7 +97,7 @@ class ImageNet(torchvision.datasets.ImageFolder):
     def parse_archives(self) -> None:
         if not check_integrity(os.path.join(self.root, META_FILE)):
             try:
-                logging.info("Parsing devkit archive")
+                logging.info(f"Parsing devkit archive, the root is {self.root}")
                 parse_devkit_archive(self.root)
             except Exception:
                 logging.info("Failed to parse devkit archive")
