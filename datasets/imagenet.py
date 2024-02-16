@@ -2,6 +2,7 @@ import os
 from functools import partial
 from typing import Any, Tuple
 
+import logging
 import torch
 import numpy as np
 import torchvision.datasets
@@ -21,6 +22,8 @@ from torchvision.datasets.imagenet import (
 
 IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".ppm", ".bmp", ".pgm", ".tif", ".tiff", ".webp", ".JPEG")
 
+
+logging.basicConfig(level=logging.INFO)
 
 def center_crop_arr(pil_image, image_size=256):
     # Imported from openai/guided-diffusion
@@ -94,14 +97,18 @@ class ImageNet(torchvision.datasets.ImageFolder):
     def parse_archives(self) -> None:
         if not check_integrity(os.path.join(self.root, META_FILE)):
             try:
+                logging.info("Parsing devkit archive")
                 parse_devkit_archive(self.root)
             except Exception:
+                logging.info("Failed to parse devkit archive")
                 pass
 
         if not os.path.isdir(self.split_folder):
             if self.split == "train":
+                logging.info("Parsing train archive")
                 parse_train_archive(self.root)
             elif self.split == "val":
+                logging.info("Parsing val archive")
                 parse_val_archive(self.root)
 
     def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
