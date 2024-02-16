@@ -48,13 +48,15 @@ class REDDIFF(DDIM):
 
         #optimizer
         dtype = torch.FloatTensor
+        
+        # mu is the mean of the variational distribution and needs to be optimized
         mu = torch.autograd.Variable(x, requires_grad=True)   #, device=device).type(dtype)
+        
         optimizer = torch.optim.Adam([mu], lr=self.lr, betas=(0.9, 0.99), weight_decay=0.0)   #original: 0.999
         #optimizer = torch.optim.SGD([mu], lr=1e6, momentum=0.9)  #momentum=0.9
 
         for ti, si in zip(reversed(ts), reversed(ss)):
-            
-            
+                
             t = torch.ones(n).to(x.device).long() * ti
             s = torch.ones(n).to(x.device).long() * si
             alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)
@@ -68,6 +70,7 @@ class REDDIFF(DDIM):
             xt = alpha_t.sqrt() * x0_pred + (1 - alpha_t).sqrt() * noise_xt
             
             #scale = 0.0
+            # below is the same as DDIM
             c1 = ((1 - alpha_t / alpha_s) * (1 - alpha_s) / (1 - alpha_t)).sqrt() * self.eta
             c2 = ((1 - alpha_s) - c1 ** 2).sqrt()
             #xt = xt.clone().to('cuda').requires_grad_(True)
@@ -76,15 +79,30 @@ class REDDIFF(DDIM):
                 scale = scale.view(-1)[0].item()
             else:
                 scale = 1.0
-                        
+            
+            # model output from DDIM
             et, x0_hat = self.model(xt, y, t, scale=scale)   #et, x0_pred
             
             if not self.awd:
                 et = (xt - x0_hat * alpha_t.sqrt()) / (1 - alpha_t).sqrt()
+                
+            # detach the score network output to avoid backpropagating through it
+            # as for w(0)=0, we have analytical form of gradient of the regularization term
             et = et.detach()
             
+            ############################################
+            # Below is solving inverse problem by optimizing mu
+            # note to get the analytic gradient, must set sigma=0 and w(0)=0
+            # which makes the Gaussian degenrate to a point mass ??
+            
             e_obs = y_0 - H.H(x0_pred)
+            
+            # MSE loss ||y-f(mu)||^2 * 1/2
             loss_obs = (e_obs**2).mean()/2
+            
+            # Regularization loss
+            # grad = E_{t~U(0,1) and noise~N(0,1)} [lambda_t (score - noise)]
+            # thus loss is lambda_t (network_out - noise)^T mu
             loss_noise = torch.mul((et - noise_xt).detach(), x0_pred).mean()
             
             snr_inv = (1-alpha_t[0]).sqrt()/alpha_t[0].sqrt()  #1d torch tensor
