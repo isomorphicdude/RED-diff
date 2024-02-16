@@ -30,6 +30,7 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
     logger = get_logger('dataset', cfg)
     exp_root = cfg.exp.root
     cfg_dataset = getattr(cfg, dataset_attr)
+    print('cfg_dataset', cfg_dataset)
     try:
         samples_root = cfg.exp.samples_root
         exp_name = cfg.exp.name
@@ -39,7 +40,9 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
         logger.info('Does not attempt to prune existing samples (overwrite=False).')
     if "ImageNet" in cfg_dataset.name:
         overwrite = getattr(cfg.exp, 'overwrite', True)
-        dset = get_imagenet_dataset(overwrite=overwrite, samples_root=samples_root, **cfg_dataset)
+        dset = get_imagenet_dataset(overwrite=overwrite, 
+                                    samples_root=samples_root,
+                                    **cfg_dataset)
         dist.barrier()
     if "FFHQ" in cfg_dataset.name:
         dset = get_ffhq_dataset(**cfg_dataset)
