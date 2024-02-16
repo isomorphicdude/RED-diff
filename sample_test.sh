@@ -1,5 +1,17 @@
 # Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved
 
+#!/bin/bash
+
+echo "Cloning the repo"
+git clone https://github.com/isomorphicdude/RED-diff.git
+repo_name = "RED-diff"
+
+cd $repo_name
+
+echo "Installing the requirements"
+pip install -r requirements.txt
+
+
 samples_root=reddiff/_exp
 save_deg=True
 save_ori=True
