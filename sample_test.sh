@@ -4,9 +4,9 @@
 
 # echo "Cloning the repo"
 # git clone https://github.com/isomorphicdude/RED-diff.git
-repo_name = "RED-diff"
+# repo_name = "RED-diff"
 
-cd $repo_name
+# cd $repo_name
 
 echo "Installing the requirements"
 pip install -r requirements.txt
