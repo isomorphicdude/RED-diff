@@ -8,8 +8,8 @@
 
 # cd $repo_name
 
-echo "Installing the requirements"
-pip install -r requirements.txt
+# echo "Installing the requirements"
+# pip install -r requirements.txt
 
 
 samples_root=reddiff/_exp
