@@ -30,7 +30,14 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
     logger = get_logger('dataset', cfg)
     exp_root = cfg.exp.root
     cfg_dataset = getattr(cfg, dataset_attr)
+    
     print('cfg_dataset', cfg_dataset)
+    
+    # first parse the devkit archive
+    from torchvision.datasets.imagenet import parse_devkit_archive
+    logger.info(f'Parsing devkit archive, the root is {exp_root}')
+    parse_devkit_archive(exp_root)
+    
     try:
         samples_root = cfg.exp.samples_root
         exp_name = cfg.exp.name
@@ -38,6 +45,7 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
     except Exception:
         samples_root = ''
         logger.info('Does not attempt to prune existing samples (overwrite=False).')
+        
     if "ImageNet" in cfg_dataset.name:
         overwrite = getattr(cfg.exp, 'overwrite', True)
         dset = get_imagenet_dataset(overwrite=overwrite, 
