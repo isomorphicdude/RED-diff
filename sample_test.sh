@@ -2,8 +2,8 @@
 
 #!/bin/bash
 
-echo "Cloning the repo"
-git clone https://github.com/isomorphicdude/RED-diff.git
+# echo "Cloning the repo"
+# git clone https://github.com/isomorphicdude/RED-diff.git
 repo_name = "RED-diff"
 
 cd $repo_name
