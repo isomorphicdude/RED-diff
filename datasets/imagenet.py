@@ -40,7 +40,8 @@ def center_crop_arr(pil_image, image_size=256):
 
 
 class ImageNet(torchvision.datasets.ImageFolder):
-    def __init__(self, root: str, split: str = "train", subset_txt='', samples_root="", meta_root="", **kwargs):
+    def __init__(self, root: str, split: str = "train", 
+                 subset_txt='', samples_root="", meta_root="", **kwargs):
         if split == "train" or split == "val":
             root = os.path.join(root, "imagenet")
         root = self.root = os.path.expanduser(root)
