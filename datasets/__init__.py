@@ -34,11 +34,11 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
     print('cfg_dataset', cfg_dataset)
     
     # first parse the devkit archive
-    from torchvision.datasets.imagenet import parse_devkit_archive
-    meta_root = cfg_dataset['meta_root']
-    logger.info(f'Parsing devkit archive, the root is {meta_root}')
-    parse_devkit_archive(meta_root)
-    logger.info(f'Parsing devkit archive done')
+    # from torchvision.datasets.imagenet import parse_devkit_archive
+    # meta_root = cfg_dataset['meta_root']
+    # logger.info(f'Parsing devkit archive, the root is {meta_root}')
+    # parse_devkit_archive(meta_root)
+    # logger.info(f'Parsing devkit archive done')
     
     try:
         samples_root = cfg.exp.samples_root
