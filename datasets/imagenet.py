@@ -108,7 +108,7 @@ class ImageNet(torchvision.datasets.ImageFolder):
                 logging.info("Parsing train archive")
                 parse_train_archive(self.root)
             elif self.split == "val":
-                logging.info("Parsing val archive")
+                logging.info(f"Parsing val archive, the root is {self.root}")
                 parse_val_archive(self.root)
 
     def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
