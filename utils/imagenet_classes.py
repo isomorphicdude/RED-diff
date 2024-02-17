@@ -1023,7 +1023,7 @@ IMAGENET2012_CLASSES = OrderedDict(
 
 
 # Specify the output file name
-output_file_name = 'imagenet_classes_top1k.txt'
+output_file_name = "datasets/imagenet-root/classes_top1k.txt"
 
 # Open the output file in write mode
 with open(output_file_name, 'w') as file:

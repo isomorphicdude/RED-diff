@@ -10,4 +10,4 @@ channels: 3
 meta_root: "datasets/imagenet-root"
 transform: "diffusion"
 #subset_txt: "stable-diffusion-sampling-gitlab/pgdm/misc/sr3_top1k.txt"  
-subset_txt: "stable-diffusion-sampling-gitlab/pgdm/misc/dgp_top1k.txt"  
+subset_txt: "datasets/imagenet-root/classes_top1k.txt"  
