@@ -59,7 +59,12 @@ class ImageNet(torchvision.datasets.ImageFolder):
         self.wnids = self.classes
         self.wnid_to_idx = self.class_to_idx
         self.classes = [wnid_to_classes[wnid] for wnid in self.wnids]
+        
+        logging.info(f"Classes are {self.classes}")
+        
         self.class_to_idx = {cls: idx for idx, clss in enumerate(self.classes) for cls in clss}
+        
+        logging.info(f"Class to idx is {self.class_to_idx}")
 
         if len(subset_txt) > 0:
             with open(subset_txt, "r") as f:
