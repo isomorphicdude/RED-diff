@@ -18,7 +18,7 @@ save_ori=True
 overwrite=True
 smoke_test=1
 batch_size=1
-num_steps=10
+num_steps=100
 
 # generate masks
 python utils/generate_inpainting_masks.py
