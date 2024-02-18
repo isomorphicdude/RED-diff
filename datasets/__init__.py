@@ -61,7 +61,7 @@ def build_one_dataset(cfg, dataset_attr='dataset'):
 
 
 def build_loader(cfg, dataset_attr='dataset'):
-        
+    """Builds a loader from the dataset attribute in the config."""
     if type(dataset_attr) == list:
         dsets = []
         for da in dataset_attr:
