@@ -52,6 +52,8 @@ def main(cfg):
     exp_name = cfg.exp.name
     samples_root = os.path.join(exp_root, samples_root, exp_name)
     dataset_name = cfg.dataset.name
+    logger.info(f"Using dataset {dataset_name}")
+    
     if dist.get_rank() == 0:
         if cfg.exp.overwrite:
             if os.path.exists(samples_root):
@@ -65,8 +67,10 @@ def main(cfg):
             
     model, classifier = build_model(cfg)
     model.eval()
+    
     if classifier is not None:
         classifier.eval()
+    
     loader = build_loader(cfg)
     logger.info(f'Dataset size is {len(loader.dataset)}')
     diffusion = Diffusion(**cfg.diffusion)
