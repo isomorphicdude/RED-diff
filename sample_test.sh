@@ -20,6 +20,12 @@ smoke_test=1
 batch_size=1
 num_steps=10
 
+# generate masks
+python utils/generate_inpainting_masks.py
+
+# exit
+# echo "Exiting the script"
+
 
 #noisy inpaint + reddiff + adam
 python   main.py   exp.overwrite=True   algo=reddiff  exp.seed=1  algo.sigma_x0=0.0   algo.awd=True    algo.deg=in2_20ff     algo.lr=0.25   exp.num_steps=$num_steps    algo.sigma_y=0.1   loader.batch_size=$batch_size    loader=imagenet256_ddrmpp    dist.num_processes_per_node=1   exp.name=debug  exp.save_ori=$save_ori  exp.save_deg=$save_deg  exp.smoke_test=$smoke_test   exp.samples_root=$samples_root      exp.save_evolution=True     algo.grad_term_weight=1.0
