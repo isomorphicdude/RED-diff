@@ -93,15 +93,16 @@ def main(cfg):
         n, c, h, w = x.size()
         x, y = x.cuda(), y.cuda()
 
-        x = preprocess(x)
+        x = preprocess(x) # 2 * x - 1, as from [0, 1] to [-1, 1]
         ts = get_timesteps(cfg)
 
         kwargs = info
         if "ddrm" in cfg.algo.name or "mcg" in cfg.algo.name or "dps" in cfg.algo.name or "pgdm" in cfg.algo.name or "reddiff" in cfg.algo.name:
             idx = info['index']
-            if 'inp' in cfg.algo.deg or 'in2' in cfg.algo.deg:   #what is in2?
+            if 'inp' in cfg.algo.deg or 'in2' in cfg.algo.deg:
                 logger.info(f"Inpainting task")
                 H.set_indices(idx)
+            
             y_0 = H.H(x)
 
             # This is to account for scaling to [-1, 1]
@@ -142,7 +143,7 @@ def main(cfg):
         
         
         if isinstance(xt_s, list):
-            xo = postprocess(xt_s[0]).cpu()
+            xo = postprocess(xt_s[0]).cpu() # transform to [0, 1]
         else:
             xo = postprocess(xt_s).cpu()
         
