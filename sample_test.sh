@@ -16,7 +16,7 @@ samples_root=reddiff/_exp
 save_deg=True
 save_ori=True
 overwrite=True
-smoke_test=1 # number of images to test
+smoke_test=20 # number of images to test
 batch_size=1
 num_steps=1000
 
