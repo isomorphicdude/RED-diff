@@ -140,166 +140,172 @@ class SparseH(GeneralH):
         return torch.sparse.mm(M, v.view(v.shape[0], vshape, 1)).view(v.shape[0], M.shape[0])
 
 
-# class Inpainting2(H_functions):
-#     def __init__(self, channels, img_dim, dense_masks, device):
-#         self.channels = channels
-#         self.img_dim = img_dim
-#         self.dense_masks = dense_masks
-#         self.device = device
-
-#     def set_indices(self, idx):
-#         idx = torch.remainder(idx, self.dense_masks.size(0))
-#         _singulars = self.dense_masks[idx].clone().to(self.device)
-#         self._singulars = _singulars.reshape(_singulars.size(0), -1)
-
-#     def V(self, vec):
-#         return vec.reshape(vec.size(0), -1)
-
-#     def Vt(self, vec):
-#         return vec.reshape(vec.size(0), -1)
-
-#     def U(self, vec):
-#         return vec.reshape(vec.size(0), -1)
-
-#     def Ut(self, vec):
-#         return vec.reshape(vec.size(0), -1)
-
-#     def add_zeros(self, vec):
-#         return vec
-
-#     def singulars(self):
-#         return self._singulars.float()
-
-#     def H(self, vec):
-#         return vec.reshape(*self.singulars().size()) * self.singulars()
-
-#     def H_pinv(self, vec):
-#         return vec.reshape(*self.singulars().size()) * self.singulars()
-
-# Inpainting
-class Inpainting(H_functions):
+class Inpainting2(H_functions):
     def __init__(self, channels, img_dim, dense_masks, device):
         self.channels = channels
         self.img_dim = img_dim
         self.dense_masks = dense_masks
-        n = dense_masks.size(0)
-        
-            
-        # xxx = [torch.nonzero(dense_masks[i] == 0).long() for i in range(n)]
-        # print('xxx', len(xxx))
-        # for i in range(len(xxx)):
-        #     print('i', i)
-        #     print(xxx[i].shape)
-
-        # import pdb; pdb.set_trace()
-        
-        #self.missing_masks = torch.cat([torch.nonzero(dense_masks[i] == 0).long() for i in range(n)], dim=0).T
-        # self.keep_masks = torch.cat([torch.nonzero(dense_masks[i] != 0).long() for i in range(n)], dim=0).T
-        
-        self.missing_masks = torch.cat([torch.nonzero(dense_masks[i] == 0).long() for i in range(n)], dim=1).T
-        self.keep_masks = torch.cat([torch.nonzero(dense_masks[i] != 0).long() for i in range(n)], dim=1).T
-        
         self.device = device
-        
+
     def set_indices(self, idx):
-        channels = self.channels
-        img_dim = self.img_dim
-        device = self.device
-        idx = torch.remainder(idx, self.missing_masks.size(0))
-        missing_masks = self.missing_masks[idx].clone().to(device)
-        # ###
-        # l = missing_masks.size(1)im
-        # missing_masks = torch.div(missing_masks[:l//3], 4, rounding_mode="floor").unique()
-        # missing_masks = torch.cat([missing_masks, missing_masks + channels * img_dim * img_dim // 4, missing_masks + channels * img_dim * img_dim // 4 * 2])
-        # missing_masks = missing_masks.view(1, -1)
-        # ###
-        missing_masks = missing_masks
-        # print('missing_masks.shape', missing_masks.shape)
-        logging.info(f"missing_masks.shape: {missing_masks.shape}")
-        self.missing_indices = missing_indices = missing_masks # self.missing_masks[idx].clone().to(device)
+        idx = torch.remainder(idx, self.dense_masks.size(0))
+        logging.info(f"idx: {idx}")
         
-        # singular
-        self._singulars = torch.ones(channels * img_dim ** 2 - missing_indices.shape[1]).to(device)
+        _singulars = self.dense_masks[idx].clone().to(self.device)
+        logging.info(f"_singulars.shape: {_singulars.shape}")
+        logging.info(f"_singulars: {_singulars}")
         
-        kept_masks = self.keep_masks[idx].clone().to(device)
-        # l = kept_masks.size(1)
-        # kept_masks = torch.div(kept_masks[:l//3], 4, rounding_mode="floor").unique()
-        # kept_masks = torch.cat([kept_masks, kept_masks + channels * img_dim * img_dim // 4, kept_masks + channels * img_dim * img_dim // 4 * 2])
-        # kept_masks = kept_masks.view(1, -1)
-        self.kept_indices = kept_masks # self.keep_masks[idx].clone().to(device)
+        
+        self._singulars = _singulars.reshape(_singulars.size(0), -1)
 
     def V(self, vec):
-        temp = vec.clone().reshape(vec.shape[0], -1)
-        out = torch.zeros_like(temp)
-        assert vec.size(0) == self.kept_indices.size(0)
-        n = vec.size(0)
-        for i in range(n):
-            out[i, self.kept_indices[i]] = temp[i, : self.kept_indices[i].shape[0]]
-            out[i, self.missing_indices[i]] = temp[i, self.kept_indices[i].shape[0] :]
-        return out #.reshape(vec.shape[0], -1, self.channels).permute(0, 2, 1).reshape(vec.shape[0], -1)
+        return vec.reshape(vec.size(0), -1)
 
     def Vt(self, vec):
-        """Degrades the input vector by V transposed."""
-        temp = vec.clone().reshape(vec.shape[0], -1)
-        out = torch.zeros_like(temp)
-        assert vec.size(0) == self.kept_indices.size(0)
-        # import ipdb; ipdb.set_trace()
-        n = vec.size(0)
-        
-        # only assigns to pixels not masked
-        for i in range(n):
-            out[i, : self.kept_indices[i].shape[0]] = temp[i, self.kept_indices[i]]
-            out[i, self.kept_indices[i].shape[0] :] = temp[i, self.missing_indices[i]]
-        return out
+        return vec.reshape(vec.size(0), -1)
 
     def U(self, vec):
-        return vec.clone().reshape(vec.shape[0], -1)
+        return vec.reshape(vec.size(0), -1)
 
     def Ut(self, vec):
-        return vec.clone().reshape(vec.shape[0], -1)
-
-    def singulars(self):
-        return self._singulars
+        return vec.reshape(vec.size(0), -1)
 
     def add_zeros(self, vec):
-        temp = torch.zeros((vec.shape[0], self.channels * self.img_dim ** 2), device=vec.device)
-        reshaped = vec.clone().reshape(vec.shape[0], -1)
-        temp[:, : reshaped.shape[1]] = reshaped
-        return temp
+        return vec
+
+    def singulars(self):
+        return self._singulars.float()
 
     def H(self, vec):
-        """
-        Multiplies the input vector by H
-        """
-        # degrades the input vector
-        temp = self.Vt(vec)
-        
-        # get 
-        singulars = self.singulars()
-        return self.U(singulars * temp[:, :singulars.shape[0]])
-
-    def Ht(self, vec):
-        """
-        Multiplies the input vector by H transposed
-        """
-        temp = self.Ut(vec)
-        singulars = self.singulars()
-        return self.V(self.add_zeros(singulars * temp[:, : singulars.shape[0]]))
+        return vec.reshape(*self.singulars().size()) * self.singulars()
 
     def H_pinv(self, vec):
-        """
-        Multiplies the input vector by the pseudo inverse of H
-        """
-        # cloned vector
-        temp = self.Ut(vec)  # (b, m) - > (b, m)
-        
-        # singulars
-        singulars = self.singulars()  # (mxm, )
-        # temp[:, :singulars.shape[0]] = temp[:, :singulars.shape[0]] / singulars
-        nonzero_idx = singulars.nonzero().flatten()
-        temp[:, nonzero_idx] = temp[:, nonzero_idx] / singulars[nonzero_idx]
+        return vec.reshape(*self.singulars().size()) * self.singulars()
 
-        return self.V(self.add_zeros(temp))
+# Inpainting
+# class Inpainting(H_functions):
+#     def __init__(self, channels, img_dim, dense_masks, device):
+#         self.channels = channels
+#         self.img_dim = img_dim
+#         self.dense_masks = dense_masks
+#         n = dense_masks.size(0)
+        
+            
+#         # xxx = [torch.nonzero(dense_masks[i] == 0).long() for i in range(n)]
+#         # print('xxx', len(xxx))
+#         # for i in range(len(xxx)):
+#         #     print('i', i)
+#         #     print(xxx[i].shape)
+
+#         # import pdb; pdb.set_trace()
+        
+#         #self.missing_masks = torch.cat([torch.nonzero(dense_masks[i] == 0).long() for i in range(n)], dim=0).T
+#         # self.keep_masks = torch.cat([torch.nonzero(dense_masks[i] != 0).long() for i in range(n)], dim=0).T
+        
+#         self.missing_masks = torch.cat([torch.nonzero(dense_masks[i] == 0).long() for i in range(n)], dim=1).T
+#         self.keep_masks = torch.cat([torch.nonzero(dense_masks[i] != 0).long() for i in range(n)], dim=1).T
+        
+#         self.device = device
+        
+#     def set_indices(self, idx):
+#         channels = self.channels
+#         img_dim = self.img_dim
+#         device = self.device
+#         idx = torch.remainder(idx, self.missing_masks.size(0))
+#         missing_masks = self.missing_masks[idx].clone().to(device)
+#         # ###
+#         # l = missing_masks.size(1)im
+#         # missing_masks = torch.div(missing_masks[:l//3], 4, rounding_mode="floor").unique()
+#         # missing_masks = torch.cat([missing_masks, missing_masks + channels * img_dim * img_dim // 4, missing_masks + channels * img_dim * img_dim // 4 * 2])
+#         # missing_masks = missing_masks.view(1, -1)
+#         # ###
+#         missing_masks = missing_masks
+#         # print('missing_masks.shape', missing_masks.shape)
+#         logging.info(f"missing_masks.shape: {missing_masks.shape}")
+#         self.missing_indices = missing_indices = missing_masks # self.missing_masks[idx].clone().to(device)
+        
+#         # singular
+#         self._singulars = torch.ones(channels * img_dim ** 2 - missing_indices.shape[1]).to(device)
+        
+#         kept_masks = self.keep_masks[idx].clone().to(device)
+#         # l = kept_masks.size(1)
+#         # kept_masks = torch.div(kept_masks[:l//3], 4, rounding_mode="floor").unique()
+#         # kept_masks = torch.cat([kept_masks, kept_masks + channels * img_dim * img_dim // 4, kept_masks + channels * img_dim * img_dim // 4 * 2])
+#         # kept_masks = kept_masks.view(1, -1)
+#         self.kept_indices = kept_masks # self.keep_masks[idx].clone().to(device)
+
+#     def V(self, vec):
+#         temp = vec.clone().reshape(vec.shape[0], -1)
+#         out = torch.zeros_like(temp)
+#         assert vec.size(0) == self.kept_indices.size(0)
+#         n = vec.size(0)
+#         for i in range(n):
+#             out[i, self.kept_indices[i]] = temp[i, : self.kept_indices[i].shape[0]]
+#             out[i, self.missing_indices[i]] = temp[i, self.kept_indices[i].shape[0] :]
+#         return out #.reshape(vec.shape[0], -1, self.channels).permute(0, 2, 1).reshape(vec.shape[0], -1)
+
+#     def Vt(self, vec):
+#         """Degrades the input vector by V transposed."""
+#         temp = vec.clone().reshape(vec.shape[0], -1)
+#         out = torch.zeros_like(temp)
+#         assert vec.size(0) == self.kept_indices.size(0)
+#         # import ipdb; ipdb.set_trace()
+#         n = vec.size(0)
+        
+#         # only assigns to pixels not masked
+#         for i in range(n):
+#             out[i, : self.kept_indices[i].shape[0]] = temp[i, self.kept_indices[i]]
+#             out[i, self.kept_indices[i].shape[0] :] = temp[i, self.missing_indices[i]]
+#         return out
+
+#     def U(self, vec):
+#         return vec.clone().reshape(vec.shape[0], -1)
+
+#     def Ut(self, vec):
+#         return vec.clone().reshape(vec.shape[0], -1)
+
+#     def singulars(self):
+#         return self._singulars
+
+#     def add_zeros(self, vec):
+#         temp = torch.zeros((vec.shape[0], self.channels * self.img_dim ** 2), device=vec.device)
+#         reshaped = vec.clone().reshape(vec.shape[0], -1)
+#         temp[:, : reshaped.shape[1]] = reshaped
+#         return temp
+
+#     def H(self, vec):
+#         """
+#         Multiplies the input vector by H
+#         """
+#         # degrades the input vector
+#         temp = self.Vt(vec)
+        
+#         # get 
+#         singulars = self.singulars()
+#         return self.U(singulars * temp[:, :singulars.shape[0]])
+
+#     def Ht(self, vec):
+#         """
+#         Multiplies the input vector by H transposed
+#         """
+#         temp = self.Ut(vec)
+#         singulars = self.singulars()
+#         return self.V(self.add_zeros(singulars * temp[:, : singulars.shape[0]]))
+
+#     def H_pinv(self, vec):
+#         """
+#         Multiplies the input vector by the pseudo inverse of H
+#         """
+#         # cloned vector
+#         temp = self.Ut(vec)  # (b, m) - > (b, m)
+        
+#         # singulars
+#         singulars = self.singulars()  # (mxm, )
+#         # temp[:, :singulars.shape[0]] = temp[:, :singulars.shape[0]] / singulars
+#         nonzero_idx = singulars.nonzero().flatten()
+#         temp[:, nonzero_idx] = temp[:, nonzero_idx] / singulars[nonzero_idx]
+
+#         return self.V(self.add_zeros(temp))
 
 
 
