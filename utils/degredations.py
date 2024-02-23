@@ -3,9 +3,11 @@ import torch
 from omegaconf import DictConfig
 import os
 from .jpeg_torch import jpeg_decode, jpeg_encode
-
+import logging
 import yaml
 from torch.nn import functional as F
+
+logging.basicConfig(level=logging.INFO)
 
 class H_functions:
     """
@@ -212,9 +214,13 @@ class Inpainting(H_functions):
         # missing_masks = missing_masks.view(1, -1)
         # ###
         missing_masks = missing_masks
-        print('missing_masks.shape', missing_masks.shape)
+        # print('missing_masks.shape', missing_masks.shape)
+        logging.info(f"missing_masks.shape: {missing_masks.shape}")
         self.missing_indices = missing_indices = missing_masks # self.missing_masks[idx].clone().to(device)
+        
+        # singular
         self._singulars = torch.ones(channels * img_dim ** 2 - missing_indices.shape[1]).to(device)
+        
         kept_masks = self.keep_masks[idx].clone().to(device)
         # l = kept_masks.size(1)
         # kept_masks = torch.div(kept_masks[:l//3], 4, rounding_mode="floor").unique()
@@ -278,7 +284,10 @@ class Inpainting(H_functions):
         """
         Multiplies the input vector by the pseudo inverse of H
         """
+        # cloned vector
         temp = self.Ut(vec)  # (b, m) - > (b, m)
+        
+        # singulars
         singulars = self.singulars()  # (mxm, )
         # temp[:, :singulars.shape[0]] = temp[:, :singulars.shape[0]] / singulars
         nonzero_idx = singulars.nonzero().flatten()
