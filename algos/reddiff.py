@@ -165,9 +165,9 @@ class REDDIFF(DDIM):
         plt.imshow(postprocess(y_0)[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
         plt.savefig('y_0.png')
         
-        x_0 = H.H_pinv(y_0).view(*x.size()).detach()
+        # x_0 = H.H_pinv(y_0).view(*x.size()).detach()
         
-        # x_0 = y_0.view(*x.size()) # what happens if we use this?
+        x_0 = H.H(y_0).view(*x.size()).detach() # what happens if we use this?
         
         plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
         plt.savefig('x_0.png')
@@ -177,7 +177,7 @@ class REDDIFF(DDIM):
         # t = torch.ones(n).to(x.device).long() * ti
         # alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
         
-        return y_0   #alpha_t.sqrt() * x_0 + (1 - alpha_t).sqrt() * torch.randn_like(x_0)    #x_0
+        return x_0   #alpha_t.sqrt() * x_0 + (1 - alpha_t).sqrt() * torch.randn_like(x_0)    #x_0
 
 
     def plot_weight_den(self, ts, **kwargs):
