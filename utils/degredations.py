@@ -140,41 +140,41 @@ class SparseH(GeneralH):
         return torch.sparse.mm(M, v.view(v.shape[0], vshape, 1)).view(v.shape[0], M.shape[0])
 
 
-class Inpainting2(H_functions):
-    def __init__(self, channels, img_dim, dense_masks, device):
-        self.channels = channels
-        self.img_dim = img_dim
-        self.dense_masks = dense_masks
-        self.device = device
+# class Inpainting2(H_functions):
+#     def __init__(self, channels, img_dim, dense_masks, device):
+#         self.channels = channels
+#         self.img_dim = img_dim
+#         self.dense_masks = dense_masks
+#         self.device = device
 
-    def set_indices(self, idx):
-        idx = torch.remainder(idx, self.dense_masks.size(0))
-        _singulars = self.dense_masks[idx].clone().to(self.device)
-        self._singulars = _singulars.reshape(_singulars.size(0), -1)
+#     def set_indices(self, idx):
+#         idx = torch.remainder(idx, self.dense_masks.size(0))
+#         _singulars = self.dense_masks[idx].clone().to(self.device)
+#         self._singulars = _singulars.reshape(_singulars.size(0), -1)
 
-    def V(self, vec):
-        return vec.reshape(vec.size(0), -1)
+#     def V(self, vec):
+#         return vec.reshape(vec.size(0), -1)
 
-    def Vt(self, vec):
-        return vec.reshape(vec.size(0), -1)
+#     def Vt(self, vec):
+#         return vec.reshape(vec.size(0), -1)
 
-    def U(self, vec):
-        return vec.reshape(vec.size(0), -1)
+#     def U(self, vec):
+#         return vec.reshape(vec.size(0), -1)
 
-    def Ut(self, vec):
-        return vec.reshape(vec.size(0), -1)
+#     def Ut(self, vec):
+#         return vec.reshape(vec.size(0), -1)
 
-    def add_zeros(self, vec):
-        return vec
+#     def add_zeros(self, vec):
+#         return vec
 
-    def singulars(self):
-        return self._singulars.float()
+#     def singulars(self):
+#         return self._singulars.float()
 
-    def H(self, vec):
-        return vec.reshape(*self.singulars().size()) * self.singulars()
+#     def H(self, vec):
+#         return vec.reshape(*self.singulars().size()) * self.singulars()
 
-    def H_pinv(self, vec):
-        return vec.reshape(*self.singulars().size()) * self.singulars()
+#     def H_pinv(self, vec):
+#         return vec.reshape(*self.singulars().size()) * self.singulars()
 
 # Inpainting
 class Inpainting(H_functions):
@@ -239,11 +239,14 @@ class Inpainting(H_functions):
         return out #.reshape(vec.shape[0], -1, self.channels).permute(0, 2, 1).reshape(vec.shape[0], -1)
 
     def Vt(self, vec):
+        """Degrades the input vector by V transposed."""
         temp = vec.clone().reshape(vec.shape[0], -1)
         out = torch.zeros_like(temp)
         assert vec.size(0) == self.kept_indices.size(0)
         # import ipdb; ipdb.set_trace()
         n = vec.size(0)
+        
+        # only assigns to pixels not masked
         for i in range(n):
             out[i, : self.kept_indices[i].shape[0]] = temp[i, self.kept_indices[i]]
             out[i, self.kept_indices[i].shape[0] :] = temp[i, self.missing_indices[i]]
@@ -268,7 +271,10 @@ class Inpainting(H_functions):
         """
         Multiplies the input vector by H
         """
+        # degrades the input vector
         temp = self.Vt(vec)
+        
+        # get 
         singulars = self.singulars()
         return self.U(singulars * temp[:, :singulars.shape[0]])
 

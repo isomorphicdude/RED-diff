@@ -100,7 +100,7 @@ def main(cfg):
         if "ddrm" in cfg.algo.name or "mcg" in cfg.algo.name or "dps" in cfg.algo.name or "pgdm" in cfg.algo.name or "reddiff" in cfg.algo.name:
             idx = info['index']
             if 'inp' in cfg.algo.deg or 'in2' in cfg.algo.deg:   #what is in2?
-                logger.info(f"Inpainting task: Using index {idx} for initialization")
+                logger.info(f"Inpainting task")
                 H.set_indices(idx)
             y_0 = H.H(x)
 
