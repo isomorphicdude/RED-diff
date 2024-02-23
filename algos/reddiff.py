@@ -171,7 +171,7 @@ class REDDIFF(DDIM):
         plt.imshow(x_0[0].permute(1, 2, 0).cpu().numpy())
         plt.savefig('x_0.png')
         
-        print(x_0 - y_0.view(*x.size()))
+        print((x_0 - y_0.view(*x.size())).sum())
         
         t = torch.ones(n).to(x.device).long() * ti
         alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
