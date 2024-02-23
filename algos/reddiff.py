@@ -167,12 +167,17 @@ class REDDIFF(DDIM):
         
         # x_0 = H.H_pinv(y_0).view(*x.size()).detach()
         
-        x_0 = H.H(y_0).view(*x.size()).detach() # what happens if we use this?
+        # x_0 = H.H(y_0).view(*x.size()).detach() # what happens if we use this? Seems fine.
+        
+        # why need to apply mask twice??
+        # make x_0 a clone of y
+        x_0 = y_0.clone().detach()
+        x_0 = x_0.view(*x.size())
         
         plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
         plt.savefig('x_0.png')
         
-        print(f"Torch allclose gives: {torch.allclose(x_0, y_0.view(*x.size()))}")
+        # print(f"Torch allclose gives: {torch.allclose(x_0, y_0.view(*x.size()))}")
         
         # t = torch.ones(n).to(x.device).long() * ti
         # alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
