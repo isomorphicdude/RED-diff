@@ -155,7 +155,7 @@ class REDDIFF(DDIM):
         
         y_0 = kwargs['y_0']
         print(f"y_0.shape: {y_0.shape}")
-        plt.imshow(y_0[0].permute(1, 2, 0).cpu().numpy())
+        # plt.imshow(y_0[0].permute(1, 2, 0).cpu().numpy())
         
         H = self.H
         n = x.size(0)

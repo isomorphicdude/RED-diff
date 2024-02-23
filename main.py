@@ -106,7 +106,7 @@ def main(cfg):
             # This is to account for scaling to [-1, 1]
             y_0 = y_0 + torch.randn_like(y_0) * cfg.algo.sigma_y * 2    #?? what is it for???
             logger.info(f"Initialized y_0.shape: {y_0.shape}")
-            print(f"y_0.shape: {y_0.shape}")
+            # print(f"y_0.shape: {y_0.shape}")
             kwargs["y_0"] = y_0
         
         
@@ -119,10 +119,10 @@ def main(cfg):
         #visualiztion of steps
         if cfg.exp.save_evolution:
             xt_vis = postprocess(xt_vis).cpu()
-            print('torch.max(mu_fft_abs_s)', torch.max(mu_fft_abs_s))
-            print('torch.min(mu_fft_abs_s)', torch.min(mu_fft_abs_s))
-            print('torch.max(mu_fft_ang_s)', torch.max(mu_fft_ang_s))
-            print('torch.min(mu_fft_ang_s)', torch.min(mu_fft_ang_s))
+            # print('torch.max(mu_fft_abs_s)', torch.max(mu_fft_abs_s))
+            # print('torch.min(mu_fft_abs_s)', torch.min(mu_fft_abs_s))
+            # print('torch.max(mu_fft_ang_s)', torch.max(mu_fft_ang_s))
+            # print('torch.min(mu_fft_ang_s)', torch.min(mu_fft_ang_s))
             mu_fft_abs = torch.log(mu_fft_abs_s+1)
             mu_fft_ang = mu_fft_ang_s  #torch.log10(mu_fft_abs_s+1)
             mu_fft_abs = (mu_fft_abs - torch.min(mu_fft_abs))/(torch.max(mu_fft_abs) - torch.min(mu_fft_abs))
