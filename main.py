@@ -104,6 +104,7 @@ def main(cfg):
                 H.set_indices(idx)
             
             y_0 = H.H(x)
+            logger.info(torch.allclose(H.H_pinv(y_0).view(*x.size()), y_0.view(*x.size())))
 
             # This is to account for scaling to [-1, 1]
             y_0 = y_0 + torch.randn_like(y_0) * cfg.algo.sigma_y * 2    #?? what is it for???
