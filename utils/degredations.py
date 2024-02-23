@@ -182,6 +182,7 @@ class Inpainting2(H_functions):
         return vec.reshape(*self.singulars().size()) * self.singulars()
 
     def H_pinv(self, vec):
+        logging.info(self.singulars())
         return vec.reshape(*self.singulars().size()) * self.singulars()
 
 # Inpainting
