@@ -701,7 +701,7 @@ def load_mask(f):
 def build_degredation_model(cfg: DictConfig):
     print(cfg.algo)
     deg =  getattr(cfg.algo, "deg", "deno")   #'inp_20ff'   #dfault value deno
-    print('deg', deg)
+    logging.info(f"Degradation type: {deg}")
     deg = deg.split('-')
     if len(deg) == 1:
         h, w, c = cfg.dataset.image_size, cfg.dataset.image_size, cfg.dataset.channels
