@@ -148,15 +148,17 @@ class Inpainting2(H_functions):
         self.device = device
 
     def set_indices(self, idx):
+        # idx is the index in the list of masks
         idx = torch.remainder(idx, self.dense_masks.size(0))
-        logging.info(f"idx: {idx}")
+        # logging.info(f"idx: {idx}")
         
+        # singulars are the masks (flattened for 3 * 256 * 256)
         _singulars = self.dense_masks[idx].clone().to(self.device)
         logging.info(f"_singulars.shape: {_singulars.shape}")
-        logging.info(f"_singulars: {_singulars}")
-        
+        logging.info(f"_singulars: {_singulars.sum()}")
         
         self._singulars = _singulars.reshape(_singulars.size(0), -1)
+        logging.info(f"self._singulars.shape: {self._singulars.shape}")
 
     def V(self, vec):
         return vec.reshape(vec.size(0), -1)

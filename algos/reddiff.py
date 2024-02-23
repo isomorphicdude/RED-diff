@@ -164,8 +164,8 @@ class REDDIFF(DDIM):
         plt.imshow(y_0[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
         plt.savefig('y_0.png')
         
-        # x_0 = H.H_pinv(y_0).view(*x.size()).detach()
-        x_0 = y_0.view(*x.size()).detach()
+        x_0 = H.H_pinv(y_0).view(*x.size()).detach()
+        # x_0 = y_0.view(*x.size()).detach()
         
         print(f"x_0.shape: {x_0.shape}")
         plt.imshow(x_0[0].permute(1, 2, 0).cpu().numpy())
