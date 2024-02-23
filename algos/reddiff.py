@@ -171,8 +171,8 @@ class REDDIFF(DDIM):
         
         # why need to apply mask twice??
         # make x_0 a clone of y. Seems fine.
-        x_0 = y_0.clone().detach()
-        x_0 = x_0.view(*x.size())
+        # x_0 = y_0.clone().detach()
+        # x_0 = x_0.view(*x.size())
         
         
         # now if just use y_0, things go wrong. Why?
