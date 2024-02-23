@@ -86,6 +86,7 @@ def main(cfg):
         
         
         if cfg.exp.smoke_test > 0 and it >= cfg.exp.smoke_test:
+            # smoke_test should be max number of images to process
             break
         
 
