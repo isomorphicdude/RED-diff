@@ -104,6 +104,7 @@ def main(cfg):
                 H.set_indices(idx)
             
             y_0 = H.H(x)
+            
             logger.info(torch.allclose(H.H_pinv(y_0).view(*x.size()), y_0.view(*x.size())))
 
             # This is to account for scaling to [-1, 1]
@@ -155,6 +156,8 @@ def main(cfg):
         psnrs.append(psnr)
 
         if cfg.exp.save_deg:
+            logger.info("Saving degradation image")
+            logger.info(f"The H is: {H}")
             xo = postprocess(get_degreadation_image(y_0, H, cfg))
 
             save_result(dataset_name, xo, y, info, samples_root, "deg")
