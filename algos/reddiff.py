@@ -162,10 +162,11 @@ class REDDIFF(DDIM):
         # n = x.size(0)
         # ti = ts[-1]
         
-        plt.imshow(postprocess(y_0)[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
-        plt.savefig('y_0.png')
+        # plt.imshow(postprocess(y_0)[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
+        # plt.savefig('y_0.png')
         
-        # x_0 = H.H_pinv(y_0).view(*x.size()).detach()
+        # for consistency with other methods, we use H_pinv
+        x_0 = H.H_pinv(y_0).view(*x.size()).detach()
         
         # x_0 = H.H(y_0).view(*x.size()).detach() # what happens if we use this? Seems fine.
         
@@ -176,10 +177,10 @@ class REDDIFF(DDIM):
         
         
         # now if just use y_0, things go wrong. Why?
-        x_0 = y_0.view(*x.size()).detach()
+        # x_0 = y_0.view(*x.size()).detach()
         
-        plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
-        plt.savefig('x_0.png')
+        # plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
+        # plt.savefig('x_0.png')
         
         # print(f"Torch allclose gives: {torch.allclose(x_0, y_0.view(*x.size()))}")
         
