@@ -66,7 +66,10 @@ class REDDIFF(DDIM):
             noise_x0 = torch.randn_like(mu)
             noise_xt = torch.randn_like(mu)
 
+            # randomly initialized 
             x0_pred = mu + sigma_x0*noise_x0
+            
+            # conditional distribution q(x_t | y)
             xt = alpha_t.sqrt() * x0_pred + (1 - alpha_t).sqrt() * noise_xt
             
             #scale = 0.0
@@ -93,7 +96,7 @@ class REDDIFF(DDIM):
             ############################################
             # Below is solving inverse problem by optimizing mu
             # note to get the analytic gradient, must set sigma=0 and w(0)=0
-            # which makes the Gaussian degenrate to a point mass ??
+            # which makes the Gaussian degenrate to a point mass
             
             e_obs = y_0 - H.H(x0_pred)
             
@@ -149,11 +152,18 @@ class REDDIFF(DDIM):
         
     def initialize(self, x, y, ts, **kwargs):
         deg = self.cfg.algo.deg
+        
         y_0 = kwargs['y_0']
+        print(f"y_0.shape: {y_0.shape}")
+        plt.imshow(y_0[0].permute(1, 2, 0).cpu().numpy())
+        
         H = self.H
         n = x.size(0)
         ti = ts[-1]
         x_0 = H.H_pinv(y_0).view(*x.size()).detach()
+        print(f"x_0.shape: {x_0.shape}")
+        plt.imshow(x_0[0].permute(1, 2, 0).cpu().numpy())
+        
         t = torch.ones(n).to(x.device).long() * ti
         alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
         return x_0   #alpha_t.sqrt() * x_0 + (1 - alpha_t).sqrt() * torch.randn_like(x_0)    #x_0
