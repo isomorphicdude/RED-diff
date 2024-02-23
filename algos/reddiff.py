@@ -170,9 +170,13 @@ class REDDIFF(DDIM):
         # x_0 = H.H(y_0).view(*x.size()).detach() # what happens if we use this? Seems fine.
         
         # why need to apply mask twice??
-        # make x_0 a clone of y
+        # make x_0 a clone of y. Seems fine.
         x_0 = y_0.clone().detach()
         x_0 = x_0.view(*x.size())
+        
+        
+        # now if just use y_0, things go wrong. Why?
+        x_0 = y_0.view(*x.size()).detach()
         
         plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
         plt.savefig('x_0.png')
