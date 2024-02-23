@@ -158,8 +158,6 @@ class REDDIFF(DDIM):
         # plt.imshow(y_0[0].permute(1, 2, 0).cpu().numpy())
         
         H = self.H
-        # print which H
-        print(H)
         # n = x.size(0)
         # ti = ts[-1]
         

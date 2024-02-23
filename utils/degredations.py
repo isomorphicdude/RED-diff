@@ -78,7 +78,8 @@ class H_functions:
         nonzero_idx = singulars.nonzero().flatten()
         temp[:, nonzero_idx] = temp[:, nonzero_idx] / singulars[nonzero_idx]
 
-        return self.V(self.add_zeros(temp))
+        # return self.V(self.add_zeros(temp))
+        return 0
 
 
 # a memory inefficient implementation for any general degradation H
