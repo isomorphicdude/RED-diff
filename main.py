@@ -105,6 +105,8 @@ def main(cfg):
 
             # This is to account for scaling to [-1, 1]
             y_0 = y_0 + torch.randn_like(y_0) * cfg.algo.sigma_y * 2    #?? what is it for???
+            logger.info(f"Initialized y_0.shape: {y_0.shape}")
+            print(f"y_0.shape: {y_0.shape}")
             kwargs["y_0"] = y_0
         
         
