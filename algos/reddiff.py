@@ -177,7 +177,7 @@ class REDDIFF(DDIM):
         # t = torch.ones(n).to(x.device).long() * ti
         # alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
         
-        return x_0   #alpha_t.sqrt() * x_0 + (1 - alpha_t).sqrt() * torch.randn_like(x_0)    #x_0
+        return y_0   #alpha_t.sqrt() * x_0 + (1 - alpha_t).sqrt() * torch.randn_like(x_0)    #x_0
 
 
     def plot_weight_den(self, ts, **kwargs):
