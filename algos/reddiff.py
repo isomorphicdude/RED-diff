@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 
 from models.classifier_guidance_model import ClassifierGuidanceModel
 from utils.degredations import build_degredation_model
+from utils.functions import postprocess
 from .ddim import DDIM
 
 import matplotlib.pyplot as plt
@@ -161,18 +162,17 @@ class REDDIFF(DDIM):
         # n = x.size(0)
         # ti = ts[-1]
         
-        # plt.imshow(y_0[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
-        # plt.savefig('y_0.png')
+        plt.imshow(postprocess(y_0)[0].reshape(3, 256, 256).permute(1, 2, 0).cpu().numpy())
+        plt.savefig('y_0.png')
         
-        # x_0 = H.H_pinv(y_0).view(*x.size()).detach()
+        x_0 = H.H_pinv(y_0).view(*x.size()).detach()
         
-        x_0 = y_0.view(*x.size()) # what happens if we use this?
+        # x_0 = y_0.view(*x.size()) # what happens if we use this?
         
-        # print(f"x_0.shape: {x_0.shape}")
-        # plt.imshow(x_0[0].permute(1, 2, 0).cpu().numpy())
-        # plt.savefig('x_0.png')
+        plt.imshow(postprocess(x_0)[0].permute(1, 2, 0).cpu().numpy())
+        plt.savefig('x_0.png')
         
-        print(f"Torch allclose gives: {torch.allclose(H.H_pinv(y_0).view(*x.size()), y_0.view(*x.size()))}")
+        print(f"Torch allclose gives: {torch.allclose(x_0, y_0.view(*x.size()))}")
         
         # t = torch.ones(n).to(x.device).long() * ti
         # alpha_t = self.diffusion.alpha(t).view(-1, 1, 1, 1)  #it is zero
