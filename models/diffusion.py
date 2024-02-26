@@ -3,7 +3,12 @@ import torch
 
 
 class Diffusion:
-    def __init__(self, beta_schedule="linear", beta_start=1e-4, beta_end=2e-2, num_diffusion_timesteps=1000, given_betas=None):
+    def __init__(self, 
+                 beta_schedule="linear",
+                 beta_start=1e-4, 
+                 beta_end=2e-2, 
+                 num_diffusion_timesteps=1000, 
+                 given_betas=None):
         from utils.functions import sigmoid
         if given_betas is None:
             if beta_schedule == "quad":
