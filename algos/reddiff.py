@@ -93,7 +93,7 @@ class REDDIFF(DDIM):
                 scale = 1.0
             
             # model output from DDIM
-            et, x0_hat = self.model(xt, y, t, scale=scale)   #et, x0_pred
+            et, x0_hat = self.model(xt, y, t, scale=scale)   #et, x0_hat
             
             if not self.awd:
                 et = (xt - x0_hat * alpha_t.sqrt()) / (1 - alpha_t).sqrt()
