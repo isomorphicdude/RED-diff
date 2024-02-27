@@ -155,11 +155,11 @@ class Inpainting2(H_functions):
         
         # singulars are the masks (flattened for 3 * 256 * 256)
         _singulars = self.dense_masks[idx].clone().to(self.device)
-        logging.info(f"_singulars.shape: {_singulars.shape}")
-        logging.info(f"_singulars: {_singulars.sum()}")
+        # logging.info(f"_singulars.shape: {_singulars.shape}")
+        # logging.info(f"_singulars: {_singulars.sum()}")
         
         self._singulars = _singulars.reshape(_singulars.size(0), -1)
-        logging.info(f"self._singulars.shape: {self._singulars.shape}")
+        # logging.info(f"self._singulars.shape: {self._singulars.shape}")
 
     def V(self, vec):
         return vec.reshape(vec.size(0), -1)
@@ -184,7 +184,7 @@ class Inpainting2(H_functions):
         return vec.reshape(*self.singulars().size()) * self.singulars()
 
     def H_pinv(self, vec):
-        logging.info(self.singulars())
+        # logging.info(self.singulars())
         return vec.reshape(*self.singulars().size()) * self.singulars()
 
 # Inpainting
