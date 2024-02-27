@@ -29,7 +29,15 @@ class REDDIFF(DDIM):
         
         print('self.lr', self.lr)
         print('self.sigma_x0', self.sigma_x0)
-
+        print('self.beta', self.diffusion.betas)
+        print('self.alpha', self.diffusion.alphas)
+        print('self.eta', self.eta)
+        print('self.grad_term_weight', self.grad_term_weight)
+        print('self.obs_weight', self.obs_weight)
+        print('self.denoise_term_weight', self.denoise_term_weight)
+        print('self.awd', self.awd)
+        print('self.cond_awd', self.cond_awd)
+        print('self.num_diffusion_timesteps', self.diffusion.num_diffusion_timesteps)
 
     def sample(self, x, y, ts, **kwargs):
         y_0 = kwargs["y_0"]
